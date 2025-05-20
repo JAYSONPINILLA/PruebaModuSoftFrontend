@@ -1,28 +1,46 @@
-import { useState } from "react";
-import { obtenerEmployesByDepartment } from "../services/employeService";
+import { useState } from 'react';
+import { obtenerEmployesByDepartment } from '../services/employeService';
 
-export default function EmployeByDepartment(){
-    const [departmentId, setDepartmentId] = useState('');
-    const [employees, setEmployees] = useState<any[]>([]);
+export default function EmployeeByDepartment() {
+  const [departmentId, setDepartmentId] = useState('');
+  const [employees, setEmployees] = useState<any[]>([]);
 
-    const handledSearch = async () => {
-        const data = await obtenerEmployesByDepartment(Number(departmentId));
-        setEmployees(data);
-    };
+  const handleSearch = async () => {
+    const data = await obtenerEmployesByDepartment(dept_no);
+    setEmployees(data);
+  };
 
-    return (
-        <div>
-            <h1>Consulta de Informaciòn de Empleados</h1>
-            <h2><p>Consulta los detalles de empleados filtrando por Id de Departamento</p></h2>
-            <h2>Buscar por Departamento</h2>
-            <input type="number" 
-                placeholder="ID Departamento"
-                value={departmentId}
-                onChange={(e) => setDepartmentId(e.target.value)}
-            />
-            <button onClick={handledSearch}>Consultar</button>
+  return (
+    <div>
+      <h2>Empleados por Departamento</h2>
+      <input
+        type="text"
+        placeholder="ID Departamento"
+        value={dept_no}
+        onChange={(e) => setDepartmentId(e.target.value)}
+      />
+      <button onClick={handleSearch}>Buscar</button>
 
-
-        </div>
-    )
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Cargo</th>
+            <th>Salario</th>
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map(emp => (
+            <tr key={emp.emp_no}>
+              <td>{emp.emp_no}</td>
+              <td>{emp.empName}</td>
+              <td>{emp.nameCargo}</td>
+              <td>{emp.salary}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

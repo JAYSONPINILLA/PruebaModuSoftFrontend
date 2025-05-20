@@ -2,14 +2,12 @@ import axios from 'axios'
 
 const API_URL = 'http://localhost:8080'
 
-export const obtenerEmployesByDepartment = async (departmentId : number) => {
+export const obtenerEmployesByDepartment = async (dept_no : string) => {
     const response = await axios.get('${API_URL}/api/employee/dept/{id}');
-    return response;
-}
+    return response.data;
+};
 
-export const obtenerEmployesByRoleAndManager = async (role: string, managerId: number) =>{
-    const response = await axios.get('${API_URL}/api/employee/titleboss/{title}/{idboss}', {
-        params: {role, managerId}
-    });
+export const createDepartment = async (dept_no : string, dept_name : string) => {
+    const response = await axios.get('${API_URL}/api/department/');
     return response.data;
 }
