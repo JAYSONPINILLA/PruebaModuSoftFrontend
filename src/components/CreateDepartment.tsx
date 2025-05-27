@@ -1,45 +1,95 @@
-import { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { Form, Button, Card, Alert, Container } from 'react-bootstrap';
+import { crearDepartamento } from '../services/departmentService';
 
-export default function CreateDepartment() {
-  const [dept_name, SetDept_name] = useState('');
-  const [dept_no, SetDept_no] = useState('');
-  const [message, setMessage] = useState('');
+const CrearDepartamento = () => {
+  const [formData, setFormData] = useState({
+    dept_no: '',
+    dept_name: '',
+    emp_no: ''
+  });
 
-  const handleCreate = async () => {
+  const [mensaje, setMensaje] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMensaje(null);
+    setError(null);
+
     try {
-      const response = await axios.post('http://localhost:8080/api/department', {
-        dept_name,
-        dept_no,
+      await crearDepartamento({
+        ...formData,
+        emp_no: parseInt(formData.emp_no, 10)
       });
-
-      setMessage(`Departamento creado con ID: ${response.data.departmentId}`);
-    } catch (error: any) {
-      if (error.response && error.response.status === 409) {
-        setMessage('Error: ');
-      } else {
-        setMessage('Error inesperado al crear el departamento.');
-      }
+      setMensaje('Departamento creado exitosamente.');
+      setFormData({ dept_no: '', dept_name: '', emp_no: '' });
+    } catch (err) {
+      setError('Error al crear el departamento.');
     }
   };
 
   return (
-    <div>
-      <h2>Crear Departamento</h2>
-      <input
-        type="text"
-        placeholder="Nombre del Departamento"
-        value={dept_name}
-        onChange={(e) => SetDept_name(e.target.value)}
-      /><br />
-      <input
-        type="text"
-        placeholder="ID de la Ubicación (dept_no)"
-        value={dept_no}
-        onChange={(e) => SetDept_no(e.target.value)}
-      /><br />
-      <button onClick={handleCreate}>Crear</button>
-      {message && <p>{message}</p>}
-    </div>
+    <Container className="mt-4 d-flex justify-content-center">
+      <Card className="p-4 shadow" style={{ width: '32rem' }}>
+        <h3 className="text-center">Crear Nuevo Departamento</h3>
+        <p className="text-center text-muted">
+          Completa los campos para registrar un nuevo departamento en el sistema.
+        </p>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Nombre del Departamento:</Form.Label>
+            <Form.Control
+              type="text"
+              name="dept_name"
+              placeholder="Ej: Ventas, IT, Marketing"
+              value={formData.dept_name}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>ID del Departamento:</Form.Label>
+            <Form.Control
+              type="text"
+              name="dept_no"
+              placeholder="Ej: D10, D20"
+              value={formData.dept_no}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>ID del Jefe del Departamento (Empleado):</Form.Label>
+            <Form.Control
+              type="number"
+              name="emp_no"
+              placeholder="Ej: 100, 101, 200"
+              value={formData.emp_no}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Button variant="success" type="submit" className="w-100">
+            Crear Departamento
+          </Button>
+
+          {mensaje && <Alert variant="success" className="mt-3">{mensaje}</Alert>}
+          {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+        </Form>
+      </Card>
+    </Container>
   );
-}
+};
+
+export default CrearDepartamento;
